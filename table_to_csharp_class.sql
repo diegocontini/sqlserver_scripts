@@ -14,6 +14,8 @@ SELECT
 				when 'varchar' then 'string'
 				when 'datetime' then 'DateTime'
 				when 'money' then 'decimal' 
+				when 'bit' then 'bool'
+				when 'smallint' then 'short'
 				else DATA_TYPE
 			  end,
 			  case IS_NULLABLE
