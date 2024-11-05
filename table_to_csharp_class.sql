@@ -14,8 +14,11 @@ SELECT
 				when 'varchar' then 'string'
 				when 'datetime' then 'DateTime'
 				when 'money' then 'decimal' 
-
 				else DATA_TYPE
+			  end,
+			  case IS_NULLABLE
+				when 'YES'	then '?'
+				else ''
 			  end,
 			  ' ', 
 			  REPLACE(COLUMN_NAME, @PREFIX, ''), 
@@ -25,3 +28,6 @@ SELECT
 WHERE TABLE_NAME = @TABLE_NAME
 union all
 select '}';
+
+
+
