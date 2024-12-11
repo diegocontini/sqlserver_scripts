@@ -40,9 +40,9 @@ BEGIN
     ');
 END;
 
-DECLARE @TABLE_NAME nvarchar(MAX) =  'EMPRESA';
-DECLARE @CLASS_NAME  nvarchar(MAX) = 'Empresa';
-DECLARE @PREFIX nvarchar(10) = 'EMP_';
+DECLARE @TABLE_NAME nvarchar(MAX) =  'ITEM_PEDIDO';
+DECLARE @CLASS_NAME  nvarchar(MAX) = 'ItemPedido';
+DECLARE @PREFIX nvarchar(10) = 'IPE_';
 -- SQLServer não deixa usar função custom diretamente em tabelas do sistema
 --Criar uma tabela temporária e popular com as infos, e depois manipular com a 
 --função criada acima
@@ -71,7 +71,9 @@ SELECT concat(
                   WHEN 'money' THEN 'decimal' 
                   WHEN 'bit' THEN 'bool'
                   WHEN 'smallint' THEN 'short'
+				  WHEN 'bigint' then 'long'
                   WHEN 'float' THEN 'double'
+				  WHEN 'date' then 'DateTime'
                   ELSE DATA_TYPE
               END,
               CASE IS_NULLABLE
