@@ -1,6 +1,8 @@
+DECLARE @TABLE_NAME nvarchar(MAX) =  'ROTA';
+DECLARE @CLASS_NAME  nvarchar(MAX) = 'Rota';
 
---Cria uma func pra transformar os atributos em PascalCase ao inves de snake_case. 
---Ex: PRO_CODIGO vira ProCodigo
+-- Create a function to transform the attributes to PascalCase instead of snake_case.
+-- Example: PRO_DESCRICAO_COMPLEMENTAR becomes DescricaoComplementar
 IF OBJECT_ID(N'dbo.SnakeToPascal', N'FN') IS NULL
 BEGIN
     EXEC('
@@ -12,7 +14,10 @@ BEGIN
             DECLARE @i int = 1;
             DECLARE @char nvarchar(1);
             DECLARE @nextUpper bit = 1;
-
+            
+            -- Remove everything before the first underscore, including the underscore itself
+            SET @snakeCase = SUBSTRING(@snakeCase, CHARINDEX(''_'', @snakeCase) + 1, LEN(@snakeCase));
+            
             WHILE @i <= LEN(@snakeCase)
             BEGIN
                 SET @char = SUBSTRING(@snakeCase, @i, 1);
@@ -40,12 +45,10 @@ BEGIN
     ');
 END;
 
-DECLARE @TABLE_NAME nvarchar(MAX) =  'ITEM_PEDIDO';
-DECLARE @CLASS_NAME  nvarchar(MAX) = 'ItemPedido';
-DECLARE @PREFIX nvarchar(10) = 'IPE_';
--- SQLServer não deixa usar função custom diretamente em tabelas do sistema
---Criar uma tabela temporária e popular com as infos, e depois manipular com a 
---função criada acima
+
+-- SQLServer doesn't allow using custom functions directly in system tables
+-- Create a temporary table and populate it with the information, then manipulate it 
+-- with the function created above
 CREATE TABLE #TempColumns (
     COLUMN_NAME nvarchar(128),
     DATA_TYPE nvarchar(128),
@@ -56,7 +59,6 @@ INSERT INTO #TempColumns (COLUMN_NAME, DATA_TYPE, IS_NULLABLE)
 SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE
 FROM INFORMATION_SCHEMA.COLUMNS
 WHERE TABLE_NAME = @TABLE_NAME;
-
 
 SELECT '[Table("' + @TABLE_NAME + '")]' + CHAR(13) + 
        'public class ' + @CLASS_NAME + ' {' + CHAR(13)
@@ -71,9 +73,11 @@ SELECT concat(
                   WHEN 'money' THEN 'decimal' 
                   WHEN 'bit' THEN 'bool'
                   WHEN 'smallint' THEN 'short'
-				  WHEN 'bigint' then 'long'
+                  WHEN 'bigint' then 'long'
                   WHEN 'float' THEN 'double'
-				  WHEN 'date' then 'DateTime'
+                  WHEN 'date' then 'DateTime'
+                  WHEN 'tinyint' then 'byte'
+                  WHEN  'uniqueidentifier' then 'Guid'
                   ELSE DATA_TYPE
               END,
               CASE IS_NULLABLE
@@ -81,13 +85,13 @@ SELECT concat(
                   ELSE ''
               END,
               ' ', 
-              dbo.SnakeToPascal(REPLACE(COLUMN_NAME, @PREFIX, '')), 
+              dbo.SnakeToPascal(COLUMN_NAME), 
               ' { get; set; }', CHAR(13)
              )
 FROM #TempColumns
 UNION ALL
 SELECT '}';
 
--- Drop a tabela temporária e a func
+-- Drop the temporary table and the function
 DROP TABLE #TempColumns;
 DROP FUNCTION SnakeToPascal;
