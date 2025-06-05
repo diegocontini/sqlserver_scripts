@@ -69,11 +69,13 @@ UNION ALL
 
 SELECT CONCAT(
               '[Column(',
+			  COLUMN_NAME,
               CASE DATA_TYPE
-                  WHEN 'decimal' THEN 'TypeName = "decimal(' + CAST(NUMERIC_PRECISION AS nvarchar) + ', ' + CAST(NUMERIC_SCALE AS nvarchar) + ')"'
-				  WHEN 'varchar' THEN 'TypeName = "varchar(' + CAST(CHARACTER_MAXIMUM_LENGTH AS nvarchar)  + ')"'
-                  ELSE '"' + COLUMN_NAME + '"'
+                  WHEN 'decimal' THEN ',TypeName = "decimal(' + CAST(NUMERIC_PRECISION AS nvarchar) + ', ' + CAST(NUMERIC_SCALE AS nvarchar) + ')"'
+				  WHEN 'varchar' THEN ',TypeName = "varchar(' + CAST(CHARACTER_MAXIMUM_LENGTH AS nvarchar)  + ')"'
+                  ELSE ''
               END,
+			  
               ')]' + CHAR(13),
               'public ', 
               CASE DATA_TYPE
