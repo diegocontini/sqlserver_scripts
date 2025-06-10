@@ -1,5 +1,5 @@
-DECLARE @TABLE_NAME nvarchar(MAX) =  'venda';
-DECLARE @CLASS_NAME  nvarchar(MAX) = 'venda';
+DECLARE @TABLE_NAME nvarchar(MAX) =  'coleta_diaria';
+DECLARE @CLASS_NAME  nvarchar(MAX) = 'ColetaDiaria';
 
 -- Create a function to transform the attributes to PascalCase instead of snake_case.
 -- Example: PRO_DESCRICAO_COMPLEMENTAR becomes DescricaoComplementar
@@ -68,8 +68,8 @@ SELECT '[Table("' + @TABLE_NAME + '")]' + CHAR(13) +
 UNION ALL
 
 SELECT CONCAT(
-              '[Column(',
-			  COLUMN_NAME,
+              '[Column("',
+			  COLUMN_NAME + '"',
               CASE DATA_TYPE
                   WHEN 'decimal' THEN ',TypeName = "decimal(' + CAST(NUMERIC_PRECISION AS nvarchar) + ', ' + CAST(NUMERIC_SCALE AS nvarchar) + ')"'
 				  WHEN 'varchar' THEN ',TypeName = "varchar(' + CAST(CHARACTER_MAXIMUM_LENGTH AS nvarchar)  + ')"'
