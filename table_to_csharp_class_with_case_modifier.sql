@@ -1,5 +1,5 @@
-DECLARE @TABLE_NAME nvarchar(MAX) =  'coleta_diaria';
-DECLARE @CLASS_NAME  nvarchar(MAX) = 'ColetaDiaria';
+DECLARE @TABLE_NAME nvarchar(MAX) =  'item_coleta_diaria_anexo';
+DECLARE @CLASS_NAME  nvarchar(MAX) = 'ItemColetaDiariaAnexo';
 
 -- Create a function to transform the attributes to PascalCase instead of snake_case.
 -- Example: PRO_DESCRICAO_COMPLEMENTAR becomes DescricaoComplementar
@@ -90,6 +90,7 @@ SELECT CONCAT(
                   WHEN 'date' THEN 'DateTime'
                   WHEN 'tinyint' THEN 'byte'
                   WHEN 'uniqueidentifier' THEN 'Guid'
+				  WHEN 'varbinary' then 'byte[]'
                   ELSE DATA_TYPE
               END,
               CASE IS_NULLABLE
